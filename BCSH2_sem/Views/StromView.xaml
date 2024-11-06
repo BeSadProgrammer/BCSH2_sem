@@ -1,0 +1,40 @@
+﻿<Window x:Class="BCSH2.StromView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="BCSH1 - StromLogger - Janoušek" Height="450" Width="800">
+    <Grid Margin="10">
+        <!-- ListView for displaying tree data -->
+        <ListView Name="ListViewStromy" Margin="0,0,100,50" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="ID" Width="80" DisplayMemberBinding="{Binding ID}" />
+                    <GridViewColumn Header="Typ stromu" Width="200" DisplayMemberBinding="{Binding TypStromu}" />
+                    <GridViewColumn Header="Správce" DisplayMemberBinding="{Binding Spravce}" />
+                    <GridViewColumn Header="Datum zasazení" DisplayMemberBinding="{Binding DatumZasazeni}" />
+                    <GridViewColumn Header="Datum poslední aktualizace" DisplayMemberBinding="{Binding DatumPosledniAktualizace}" />
+                    <GridViewColumn Header="Lokace" DisplayMemberBinding="{Binding Lokace}" />
+                    <GridViewColumn Header="Výška (m)" DisplayMemberBinding="{Binding Vyska}" />
+                    <GridViewColumn Header="Průměr kmene (m)" DisplayMemberBinding="{Binding PrumerKmenu}" />
+                    <GridViewColumn Header="Typ kůry" DisplayMemberBinding="{Binding TypKury}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <!-- Buttons on the right side -->
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Top" Width="80" Margin="0,0,10,0">
+            <Button Name="NewBtn" Content="Nový" Height="30" Margin="0,0,0,5" Click="NewBtn_Click" />
+            <Button Name="EditBtn" Content="Úprava" Height="30" Margin="0,0,0,5" Click="EditBtn_Click" />
+            <Button Name="DeleteSelectedBtn" Content="Smazat" Height="30" Margin="0,0,0,5" Click="DeleteSelectedBtn_Click" />
+            <Button Name="SearchBtn" Content="Hledat" Height="30" Margin="0,0,0,5" Click="SearchBtn_Click" />
+            <Button Name="SpravceBtn" Content="Správce" Height="30" Margin="0,0,0,5" Click="SpravceBtn_Click" />
+            <Button Name="RegionBtn" Content="Regiony" Height="30" Margin="0,0,0,5" Click="RegionBtn_Click" />
+        </StackPanel>
+
+        <!-- Buttons on the bottom -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,10">
+            <Button Name="SaveBtn" Content="Uložit" Width="75" Height="30" Margin="0,0,10,0" Click="SaveBtn_Click" />
+            <Button Name="LoadBtn" Content="Načíst" Width="75" Height="30" Margin="0,0,10,0" Click="LoadBtn_Click" />
+            <Button Name="DeleteAllBtn" Content="Zrušit" Width="75" Height="30" Click="DeleteAllBtn_Click" />
+        </StackPanel>
+    </Grid>
+</Window>
