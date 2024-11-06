@@ -1,5 +1,4 @@
-﻿using BCSH2.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,19 +16,13 @@ using System.Windows.Shapes;
 namespace BCSH2_sem.Views
 {
     /// <summary>
-    /// Interaction logic for StromView.xaml
+    /// Interaction logic for SpravceView.xaml
     /// </summary>
-    public partial class StromView : UserControl
+    public partial class SpravceView : UserControl
     {
-        public StromView()
+        public SpravceView()
         {
             InitializeComponent();
-            this.DataContext = new StromViewModel();
-        }
-
-        private void InitializeComponent()
-        {
-            // ToDo
         }
     }
 }

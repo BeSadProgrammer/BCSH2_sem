@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
+using System.Windows.Input;
 using BCSH2.Models;
 
 namespace BCSH2.ViewModels
@@ -18,6 +20,8 @@ namespace BCSH2.ViewModels
         private double _vyska;
         private double _prumerKmene;
         private string _typKury;
+
+        public ObservableCollection<Strom> Stromy { get; set; }
 
         public int ID
         {
@@ -73,17 +77,78 @@ namespace BCSH2.ViewModels
             set => SetProperty(ref _typKury, value);
         }
 
-        public StromViewModel(Strom strom)
+        // ICommands for buttons
+        public ICommand NewCommand { get; }
+        public ICommand EditCommand { get; }
+        public ICommand DeleteCommand { get; }
+        public ICommand SaveCommand { get; }
+        public ICommand LoadCommand { get; }
+        public ICommand DeleteAllCommand { get; }
+        public ICommand SearchCommand { get; }
+        public ICommand SpravceCommand { get; }
+        public ICommand RegionCommand { get; }
+
+        public StromViewModel()
         {
-            _id = strom.ID;
-            _stromTyp = strom.StromTyp;
-            _spravce = strom.Spravce;
-            _datumZasazeni = strom.DatumZasazeni;
-            _datumPridaniZaznamu = strom.DatumPridaniZaznamu;
-            _lokace = strom.Lokace;
-            _vyska = strom.Vyska;
-            _prumerKmene = strom.PrumerKmene;
-            _typKury = strom.TypKury;
+            Stromy = new ObservableCollection<Strom>();
+
+            NewCommand = new RelayCommand(NewAction);
+            EditCommand = new RelayCommand(EditAction);
+            DeleteCommand = new RelayCommand(DeleteAction);
+            SaveCommand = new RelayCommand(SaveAction);
+            LoadCommand = new RelayCommand(LoadAction);
+            DeleteAllCommand = new RelayCommand(DeleteAllAction);
+            SearchCommand = new RelayCommand(SearchAction);
+            SpravceCommand = new RelayCommand(SpravceAction);
+            RegionCommand = new RelayCommand(RegionAction);
+        }
+
+        private void NewAction()
+        {
+            // Opravit správce -> public Spravce(string jmeno, string prijmeni, string email, string telefon, Region region)
+            // Trees.Add(new Strom(new DruhyStromuTyp(), new Spravce(), DateTime.Now, DateTime.Now, "New Location", 10.5, 0.5, "BarkType"));
+        }
+
+        private void EditAction()
+        {
+            if (Stromy.Count > 0)
+            {
+                var StromToEdit = Stromy[0];
+                StromToEdit.Lokace = "Updated Location";
+            }
+        }
+
+        private void DeleteAction()
+        {
+            if (Stromy.Count > 0)
+            {
+                Stromy.RemoveAt(0);
+            }
+        }
+
+        private void SaveAction()
+        {
+        }
+
+        private void LoadAction()
+        {
+        }
+
+        private void DeleteAllAction()
+        {
+            Stromy.Clear();
+        }
+
+        private void SearchAction()
+        {
+        }
+
+        private void SpravceAction()
+        {
+        }
+
+        private void RegionAction()
+        {
         }
     }
 }
