@@ -1,12 +1,28 @@
-﻿<UserControl x:Class="BCSH2_sem.Views.RegionView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:BCSH2_sem.Views"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
+﻿<Window x:Class="BCSH2.Views.RegionView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Seznam regionů" Height="450" Width="800">
+    <Grid Margin="10">
+        <!-- ListView to display regions -->
+        <ListView Name="RegionListView" 
+                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                  Grid.Row="0"
+                  SelectionMode="Single"
+                  ItemsSource="{Binding Regions}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="ID Regionu" Width="80" DisplayMemberBinding="{Binding ID}"/>
+                    <GridViewColumn Header="Název regionu" Width="170" DisplayMemberBinding="{Binding Nazev}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <!-- Bottom row buttons -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,10,0,0">
+            <Button Content="Nový" Width="75" Margin="0,0,10,0" Command="{Binding NewRegionCommand}"/>
+            <Button Content="Úprava" Width="75" Margin="0,0,10,0" Command="{Binding EditRegionCommand}"/>
+            <Button Content="Odebrat" Width="75" Margin="0,0,10,0" Command="{Binding DeleteRegionCommand}"/>
+            <Button Content="Zavřít" Width="75" Command="{Binding CloseCommand}"/>
+        </StackPanel>
     </Grid>
-</UserControl>
+</Window>

@@ -19,7 +19,7 @@ namespace BCSH2_sem.Views
     /// <summary>
     /// Interaction logic for StromView.xaml
     /// </summary>
-    public partial class StromView : UserControl
+    public partial class StromView : Window
     {
         public StromView()
         {
@@ -27,9 +27,5 @@ namespace BCSH2_sem.Views
             this.DataContext = new StromViewModel();
         }
 
-        private void InitializeComponent()
-        {
-            // ToDo
-        }
     }
 }

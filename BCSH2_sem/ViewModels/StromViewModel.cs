@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using BCSH2.Models;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using System.Windows;
 
 namespace BCSH2.ViewModels
 {
@@ -107,6 +110,7 @@ namespace BCSH2.ViewModels
         {
             // Opravit správce -> public Spravce(string jmeno, string prijmeni, string email, string telefon, Region region)
             // Trees.Add(new Strom(new DruhyStromuTyp(), new Spravce(), DateTime.Now, DateTime.Now, "New Location", 10.5, 0.5, "BarkType"));
+            MessageBox.Show("aaaa");
         }
 
         private void EditAction()
