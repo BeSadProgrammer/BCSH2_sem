@@ -2,214 +2,468 @@
 using StromApp.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace StromApp.Handlers
 {
     public class SQLiteHandler
     {
-        private const string DatabaseFile = "data.db";
+        private readonly string _connectionString = "Data Source=data.db";
 
-        // Establish a connection to the SQLite database
-        private static SqliteConnection GetConnection()
+        public void InitializeDatabase()
         {
-            var connectionString = new SqliteConnectionStringBuilder { DataSource = DatabaseFile }.ToString();
-            return new SqliteConnection(connectionString);
-        }
-
-        // Initialize the database (create tables if they don't exist)
-        public static void InitializeDatabase()
-        {
-            using var connection = GetConnection();
-            connection.Open();
-
-            // Create Regions table
-            var createRegionsTableCmd = @"CREATE TABLE IF NOT EXISTS Regions (
-                RegionID INTEGER PRIMARY KEY AUTOINCREMENT,
-                NazevRegionu TEXT
-            )";
-            using var command = new SqliteCommand(createRegionsTableCmd, connection);
-            command.ExecuteNonQuery();
-
-            // Create Spravce table
-            var createSpravceTableCmd = @"CREATE TABLE IF NOT EXISTS Spravce (
-                SpravceID INTEGER PRIMARY KEY AUTOINCREMENT,
-                Jmeno TEXT NOT NULL,
-                Prijmeni TEXT NOT NULL,
-                Email TEXT NOT NULL,
-                Telefon TEXT NOT NULL,
-                RegionID INTEGER,
-                FOREIGN KEY (RegionID) REFERENCES Regions (RegionID)
-            )";
-            command.CommandText = createSpravceTableCmd;
-            command.ExecuteNonQuery();
-
-            // Create Strom table
-            var createStromTableCmd = @"CREATE TABLE IF NOT EXISTS Strom (
-                ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                StromTyp TEXT NOT NULL,
-                SpravceID INTEGER,
-                DatumZasazeni TEXT NOT NULL,
-                DatumPridaniZaznamu TEXT NOT NULL,
-                Lokace TEXT NOT NULL,
-                Vyska REAL NOT NULL,
-                PrumerKmene REAL NOT NULL,
-                TypKury TEXT NOT NULL,
-                FOREIGN KEY (SpravceID) REFERENCES Spravce (SpravceID)
-            )";
-            command.CommandText = createStromTableCmd;
-            command.ExecuteNonQuery();
-        }
-
-        // Insert a Region
-        public static void InsertRegion(Region region)
-        {
-            using var connection = GetConnection();
-            connection.Open();
-
-            var cmd = @"INSERT INTO Regions (NazevRegionu) VALUES (@NazevRegionu)";
-            using var command = new SqliteCommand(cmd, connection);
-            command.Parameters.AddWithValue("@NazevRegionu", region.NazevRegionu);
-            command.ExecuteNonQuery();
-        }
-
-        // Get all Regions
-        public static List<Region> GetRegions()
-        {
-            using var connection = GetConnection();
-            connection.Open();
-
-            var cmd = "SELECT * FROM Regions";
-            using var command = new SqliteCommand(cmd, connection);
-            using var reader = command.ExecuteReader();
-
-            var regions = new List<Region>();
-            while (reader.Read())
+            // Vytvoření tabulek
+            using (var connection = new SqliteConnection(_connectionString))
             {
-                var region = new Region(reader.GetString(1)) { RegionID = reader.GetInt32(0) };
-                regions.Add(region);
-            }
-            return regions;
-        }
+                connection.Open();
 
-        // Insert a Spravce (Manager)
-        public static void InsertSpravce(Spravce spravce)
-        {
-            using var connection = GetConnection();
-            connection.Open();
+                var createRegionTable = @"
+                CREATE TABLE IF NOT EXISTS Region (
+                    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    NazevRegionu TEXT NOT NULL
+                );";
 
-            var cmd = @"INSERT INTO Spravce (Jmeno, Prijmeni, Email, Telefon, RegionID) 
-                        VALUES (@Jmeno, @Prijmeni, @Email, @Telefon, @RegionID)";
-            using var command = new SqliteCommand(cmd, connection);
-            command.Parameters.AddWithValue("@Jmeno", spravce.Jmeno);
-            command.Parameters.AddWithValue("@Prijmeni", spravce.Prijmeni);
-            command.Parameters.AddWithValue("@Email", spravce.Email);
-            command.Parameters.AddWithValue("@Telefon", spravce.Telefon);
-            command.Parameters.AddWithValue("@RegionID", spravce.Region.RegionID);
-            command.ExecuteNonQuery();
-        }
+                var createSpravceTable = @"
+                CREATE TABLE IF NOT EXISTS Spravce (
+                    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Jmeno TEXT NOT NULL,
+                    Prijmeni TEXT NOT NULL,
+                    Email TEXT,
+                    Telefon TEXT,
+                    RegionID INTEGER,
+                    FOREIGN KEY (RegionID) REFERENCES Region(ID)
+                );";
 
-        // Get all Spravce (Managers)
-        public static List<Spravce> GetSpravce()
-        {
-            using var connection = GetConnection();
-            connection.Open();
+                var createStromTable = @"
+                CREATE TABLE IF NOT EXISTS Strom (
+                    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                    DruhStromu INTEGER,
+                    SpravceID INTEGER,
+                    DatumZasazeni TEXT,
+                    DatumPridaniZaznamu TEXT,
+                    Lokace TEXT,
+                    Vyska REAL,
+                    PrumerKmeni REAL,
+                    TypKury TEXT,
+                    FOREIGN KEY (SpravceID) REFERENCES Spravce(ID)
+                );";
 
-            var cmd = "SELECT * FROM Spravce";
-            using var command = new SqliteCommand(cmd, connection);
-            using var reader = command.ExecuteReader();
-
-            var spravceList = new List<Spravce>();
-            while (reader.Read())
-            {
-                var region = GetRegions().FirstOrDefault(r => r.RegionID == reader.GetInt32(5));
-                var spravce = new Spravce(
-                    reader.GetString(1),
-                    reader.GetString(2),
-                    reader.GetString(3),
-                    reader.GetString(4),
-                    region
-                )
-                { SpravceID = reader.GetInt32(0) };
-                spravceList.Add(spravce);
-            }
-            return spravceList;
-        }
-
-        // Insert a Strom (Tree)
-        public static void InsertStrom(Strom strom)
-        {
-            using var connection = GetConnection();
-            connection.Open();
-
-            var cmd = @"INSERT INTO Strom (StromTyp, SpravceID, DatumZasazeni, DatumPridaniZaznamu, Lokace, Vyska, PrumerKmene, TypKury) 
-                        VALUES (@StromTyp, @SpravceID, @DatumZasazeni, @DatumPridaniZaznamu, @Lokace, @Vyska, @PrumerKmene, @TypKury)";
-            using var command = new SqliteCommand(cmd, connection);
-            command.Parameters.AddWithValue("@StromTyp", strom.StromTyp.ToString());
-            command.Parameters.AddWithValue("@SpravceID", strom.Spravce.SpravceID);
-            command.Parameters.AddWithValue("@DatumZasazeni", strom.DatumZasazeni.ToString("yyyy-MM-dd"));
-            command.Parameters.AddWithValue("@DatumPridaniZaznamu", strom.DatumPridaniZaznamu.ToString("yyyy-MM-dd"));
-            command.Parameters.AddWithValue("@Lokace", strom.Lokace);
-            command.Parameters.AddWithValue("@Vyska", strom.Vyska);
-            command.Parameters.AddWithValue("@PrumerKmene", strom.PrumerKmene);
-            command.Parameters.AddWithValue("@TypKury", strom.TypKury);
-            command.ExecuteNonQuery();
-        }
-
-        // Get all Trees
-        public static List<Strom> GetStromy()
-        {
-            using var connection = GetConnection();
-            connection.Open();
-
-            var cmd = "SELECT * FROM Strom";
-            using var command = new SqliteCommand(cmd, connection);
-            using var reader = command.ExecuteReader();
-
-            var stromyList = new List<Strom>();
-            while (reader.Read())
-            {
-                var spravce = GetSpravce().FirstOrDefault(s => s.SpravceID == reader.GetInt32(2));
-                var strom = new Strom(
-                    (DruhyStromuTyp)Enum.Parse(typeof(DruhyStromuTyp), reader.GetString(1)),
-                    spravce,
-                    DateTime.Parse(reader.GetString(3)),
-                    DateTime.Parse(reader.GetString(4)),
-                    reader.GetString(5),
-                    reader.GetDouble(6),
-                    reader.GetDouble(7),
-                    reader.GetString(8)
-                )
+                using (var command = new SqliteCommand(createRegionTable, connection))
                 {
-                    ID = reader.GetInt32(0)
-                };
-                stromyList.Add(strom);
+                    command.ExecuteNonQuery();
+                }
+
+                using (var command = new SqliteCommand(createSpravceTable, connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+
+                using (var command = new SqliteCommand(createStromTable, connection))
+                {
+                    command.ExecuteNonQuery();
+                }
             }
-            return stromyList;
         }
 
-        // Delete Strom by ID
-        public static void DeleteStrom(int stromID)
+        public void InsertInitialData()
         {
-            using var connection = GetConnection();
-            connection.Open();
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
 
-            var cmd = "DELETE FROM Strom WHERE ID = @ID";
-            using var command = new SqliteCommand(cmd, connection);
-            command.Parameters.AddWithValue("@ID", stromID);
-            command.ExecuteNonQuery();
+                // Kontrola, zda existují regiony
+                var checkRegionQuery = "SELECT COUNT(*) FROM Region;";
+                using (var command = new SqliteCommand(checkRegionQuery, connection))
+                {
+                    var regionCount = Convert.ToInt32(command.ExecuteScalar());
+                    if (regionCount == 0)
+                    {
+                        // Pokud nejsou žádné regiony, vložíme počáteční data
+                        var insertRegionQuery = @"
+                    INSERT INTO Region (NazevRegionu) VALUES
+                    ('Default'),
+                    ('Sever'),
+                    ('Jih'),
+                    ('Vychod'),
+                    ('Západ');";
+                        using (var insertCommand = new SqliteCommand(insertRegionQuery, connection))
+                        {
+                            insertCommand.ExecuteNonQuery();
+                        }
+                    }
+                }
+
+                // Kontrola, zda existují správci
+                var checkSpravceQuery = "SELECT COUNT(*) FROM Spravce;";
+                using (var command = new SqliteCommand(checkSpravceQuery, connection))
+                {
+                    var spravceCount = Convert.ToInt32(command.ExecuteScalar());
+                    if (spravceCount == 0)
+                    {
+                        // Pokud nejsou žádní správci, vložíme počáteční data
+                        var insertSpravceQuery = @"
+                    INSERT INTO Spravce (Jmeno, Prijmeni, Email, Telefon, RegionID) VALUES
+                    ('Default', 'Spravce', '', '', 1),
+                    ('Petr', 'Svoboda', 'petr.svoboda@example.com', '987654321', 2);";
+                        using (var insertCommand = new SqliteCommand(insertSpravceQuery, connection))
+                        {
+                            insertCommand.ExecuteNonQuery();
+                        }
+                    }
+                }
+
+                // Kontrola, zda existují stromy
+                var checkStromQuery = "SELECT COUNT(*) FROM Strom;";
+                using (var command = new SqliteCommand(checkStromQuery, connection))
+                {
+                    var stromCount = Convert.ToInt32(command.ExecuteScalar());
+                    if (stromCount == 0)
+                    {
+                        // Pokud nejsou žádné stromy, vložíme počáteční data
+                        var insertStromQuery = @"
+                    INSERT INTO Strom (DruhStromu, SpravceID, DatumZasazeni, DatumPridaniZaznamu, Lokace, Vyska, PrumerKmeni, TypKury) VALUES
+                    (0, 1, '2023-04-10', '2023-04-10', 'Les 1', 15.5, 0.3, 'Hladká'),
+                    (1, 2, '2022-06-15', '2022-06-15', 'Les 2', 18.3, 0.35, 'Drsná');";
+                        using (var insertCommand = new SqliteCommand(insertStromQuery, connection))
+                        {
+                            insertCommand.ExecuteNonQuery();
+                        }
+                    }
+                }
+            }
         }
 
-        // Delete Region by ID
-        public static void DeleteRegion(int regionID)
+        // ------------------------------------
+        // REGIONY
+        // ------------------------------------
+        public List<Region> GetAllRegiony()
         {
-            using var connection = GetConnection();
-            connection.Open();
+            var regiony = new List<Region>();
 
-            var cmd = "DELETE FROM Regions WHERE RegionID = @RegionID";
-            using var command = new SqliteCommand(cmd, connection);
-            command.Parameters.AddWithValue("@RegionID", regionID);
-            command.ExecuteNonQuery();
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+
+                var query = "SELECT ID, NazevRegionu FROM Region";
+
+                using (var command = new SqliteCommand(query, connection))
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        regiony.Add(new Region
+                        {
+                            ID = reader.GetInt32(0),
+                            NazevRegionu = reader.GetString(1)
+                        });
+                    }
+                }
+            }
+
+            return regiony;
+        }
+        public Region AddRegion(Region newRegion)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+
+                var insertRegionQuery = "INSERT INTO Region (NazevRegionu) VALUES (@NazevRegionu);";
+                using (var command = new SqliteCommand(insertRegionQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@NazevRegionu", newRegion.NazevRegionu);
+                    command.ExecuteNonQuery();
+                }
+
+                // Získání ID nového regionu
+                var getIdQuery = "SELECT last_insert_rowid();";
+                using (var command = new SqliteCommand(getIdQuery, connection))
+                {
+                    newRegion.ID = Convert.ToInt32(command.ExecuteScalar());
+                }
+
+                return newRegion;
+            }
+        }
+
+        // Metoda pro odstranění regionu podle ID
+        public void DeleteRegion(int id)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+
+                var query = "DELETE FROM Region WHERE ID = @ID";
+
+                using (var command = new SqliteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@ID", id);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        // ------------------------------------
+        // Správci
+        // ------------------------------------
+        public List<Spravce> GetAllSpravci()
+        {
+            var spravciList = new List<Spravce>();
+
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+
+                var query = @"
+                    SELECT s.ID, s.Jmeno, s.Prijmeni, s.Email, s.Telefon, s.RegionID, r.NazevRegionu
+                    FROM Spravce s
+                    INNER JOIN Region r ON s.RegionID = r.ID";
+
+                using (var command = new SqliteCommand(query, connection))
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var spravce = new Spravce
+                        {
+                            ID = reader.GetInt32(0),
+                            Jmeno = reader.GetString(1),
+                            Prijmeni = reader.GetString(2),
+                            Email = reader.GetString(3),
+                            Telefon = reader.GetString(4),
+                            RegionID = reader.GetInt32(5),
+                            NazevRegionu = reader.GetString(6)
+                        };
+                        spravciList.Add(spravce);
+                    }
+                }
+            }
+
+            return spravciList;
+        }
+
+        public Spravce AddSpravce(Spravce newSpravce)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+
+                var insertSpravceQuery = @"
+                    INSERT INTO Spravce (Jmeno, Prijmeni, Email, Telefon, RegionID) 
+                    VALUES (@Jmeno, @Prijmeni, @Email, @Telefon, @RegionID);";
+
+                using (var command = new SqliteCommand(insertSpravceQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@Jmeno", newSpravce.Jmeno);
+                    command.Parameters.AddWithValue("@Prijmeni", newSpravce.Prijmeni);
+                    command.Parameters.AddWithValue("@Email", newSpravce.Email);
+                    command.Parameters.AddWithValue("@Telefon", newSpravce.Telefon);
+                    command.Parameters.AddWithValue("@RegionID", newSpravce.RegionID);
+                    command.ExecuteNonQuery();
+                }
+
+                // Získání ID nového správce
+                var getIdQuery = "SELECT last_insert_rowid();";
+                using (var command = new SqliteCommand(getIdQuery, connection))
+                {
+                    newSpravce.ID = Convert.ToInt32(command.ExecuteScalar());
+                }
+
+                return newSpravce;
+            }
+        }
+
+        // Metoda pro odstranění správce podle ID
+        public void DeleteSpravce(int id)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+
+                var query = "DELETE FROM Spravce WHERE ID = @ID";
+
+                using (var command = new SqliteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@ID", id);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        // ------------------------------------
+        // Stromy
+        // ------------------------------------
+
+        // Metoda pro získání všech stromů
+        public List<Strom> GetAllStromy()
+        {
+            var stromy = new List<Strom>();
+
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+
+                var query = @"
+                    SELECT 
+                        s.ID,
+                        s.DruhStromu,
+                        s.SpravceID,
+                        s.DatumZasazeni,
+                        s.DatumPridaniZaznamu,
+                        s.Lokace,
+                        s.Vyska,
+                        s.PrumerKmeni,
+                        s.TypKury,
+                        spr.Jmeno || ' ' || spr.Prijmeni AS SpravceNazev,
+                        r.NazevRegionu AS RegionNazev
+                    FROM Strom s
+                    LEFT JOIN Spravce spr ON s.SpravceID = spr.ID
+                    LEFT JOIN Region r ON spr.RegionID = r.ID";
+
+                using (var command = new SqliteCommand(query, connection))
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        stromy.Add(new Strom
+                        {
+                            ID = reader.GetInt32(0),
+                            DruhStromu = (DruhyStromuTyp)reader.GetInt32(1),
+                            SpravceID = reader.GetInt32(2),
+                            DatumZasazeni = reader.GetDateTime(3),
+                            DatumPridaniZaznamu = reader.GetDateTime(4),
+                            Lokace = reader.GetString(5),
+                            Vyska = reader.GetDouble(6),
+                            PrumerKmeni = reader.GetDouble(7),
+                            TypKury = reader.IsDBNull(8) ? null : reader.GetString(8),
+                            Spravce = reader.GetString(9)
+                        });
+                    }
+                }
+            }
+
+            return stromy;
+        }
+
+        public Strom AddStrom(Strom newStrom)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+
+                var insertStromQuery = @"
+                    INSERT INTO Strom (DruhStromu, SpravceID, DatumZasazeni, DatumPridaniZaznamu, Lokace, Vyska, PrumerKmeni, TypKury) 
+                    VALUES (@DruhStromu, @SpravceID, @DatumZasazeni, @DatumPridaniZaznamu, @Lokace, @Vyska, @PrumerKmeni, @TypKury);";
+
+                using (var command = new SqliteCommand(insertStromQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@DruhStromu", (int)newStrom.DruhStromu);
+                    command.Parameters.AddWithValue("@SpravceID", newStrom.SpravceID);
+                    command.Parameters.AddWithValue("@DatumZasazeni", newStrom.DatumZasazeni);
+                    command.Parameters.AddWithValue("@DatumPridaniZaznamu", newStrom.DatumPridaniZaznamu);
+                    command.Parameters.AddWithValue("@Lokace", newStrom.Lokace);
+                    command.Parameters.AddWithValue("@Vyska", newStrom.Vyska);
+                    command.Parameters.AddWithValue("@PrumerKmeni", newStrom.PrumerKmeni);
+                    command.Parameters.AddWithValue("@TypKury", newStrom.TypKury);
+                    command.ExecuteNonQuery();
+                }
+
+                // Získání ID nového stromu
+                var getIdQuery = "SELECT last_insert_rowid();";
+                using (var command = new SqliteCommand(getIdQuery, connection))
+                {
+                    newStrom.ID = Convert.ToInt32(command.ExecuteScalar());
+                }
+
+                return newStrom;
+            }
+        }
+
+        // Metoda pro odstranění stromu podle ID
+        public void DeleteStrom(int id)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+
+                var query = "DELETE FROM Strom WHERE ID = @ID";
+
+                using (var command = new SqliteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@ID", id);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        // Metoda pro zrušení všech stromů (mazání všech záznamů)
+        public void ClearStromy()
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+
+                var query = "DELETE FROM Strom";
+
+                using (var command = new SqliteCommand(query, connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        // Metoda pro hledání stromů podle textu (např. Lokace, Typ Kůry, Region)
+        public List<Strom> SearchStromy(string searchText)
+        {
+            var stromy = new List<Strom>();
+
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+
+                var query = @"
+                    SELECT 
+                        s.ID,
+                        s.DruhStromu,
+                        s.SpravceID,
+                        s.DatumZasazeni,
+                        s.DatumPridaniZaznamu,
+                        s.Lokace,
+                        s.Vyska,
+                        s.PrumerKmeni,
+                        s.TypKury,
+                        spr.Jmeno || ' ' || spr.Prijmeni AS SpravceNazev,
+                        r.NazevRegionu AS RegionNazev
+                    FROM Strom s
+                    LEFT JOIN Spravce spr ON s.SpravceID = spr.ID
+                    LEFT JOIN Region r ON spr.RegionID = r.ID
+                    WHERE s.Lokace LIKE @SearchText OR s.TypKury LIKE @SearchText OR r.NazevRegionu LIKE @SearchText";
+
+                using (var command = new SqliteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@SearchText", "%" + searchText + "%");
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            stromy.Add(new Strom
+                            {
+                                ID = reader.GetInt32(0),
+                                DruhStromu = (DruhyStromuTyp)reader.GetInt32(1),
+                                SpravceID = reader.GetInt32(2),
+                                DatumZasazeni = reader.GetDateTime(3),
+                                DatumPridaniZaznamu = reader.GetDateTime(4),
+                                Lokace = reader.GetString(5),
+                                Vyska = reader.GetDouble(6),
+                                PrumerKmeni = reader.GetDouble(7),
+                                TypKury = reader.IsDBNull(8) ? null : reader.GetString(8)
+                            });
+                        }
+                    }
+                }
+            }
+
+            return stromy;
         }
     }
 }

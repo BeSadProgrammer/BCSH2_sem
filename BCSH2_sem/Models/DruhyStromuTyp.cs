@@ -1,61 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace StromApp.Models;
-
-public enum DruhyStromuTyp
+﻿namespace StromApp.Models
 {
-    None,
-    Borovice,
-    Buk,
-    Dub,
-    Modrin,
-    Smrk,
-    Jedle,
-    Jasan,
-    Topol,
-    Briza,
-    Javor
-}
-
-public static class StromTypInfo
-{
-    public static readonly int Count = Enum.GetValues(typeof(DruhyStromuTyp)).Length;
-
-    public static IEnumerable<DruhyStromuTyp> Items
+    public enum DruhyStromuTyp
     {
-        get
-        {
-            yield return DruhyStromuTyp.None;
-            yield return DruhyStromuTyp.Borovice;
-            yield return DruhyStromuTyp.Buk;
-            yield return DruhyStromuTyp.Dub;
-            yield return DruhyStromuTyp.Modrin;
-            yield return DruhyStromuTyp.Smrk;
-            yield return DruhyStromuTyp.Jedle;
-            yield return DruhyStromuTyp.Jasan;
-            yield return DruhyStromuTyp.Topol;
-            yield return DruhyStromuTyp.Briza;
-            yield return DruhyStromuTyp.Javor;
-        }
-    }
-
-    public static string GetName(DruhyStromuTyp stromTyp)
-    {
-        return stromTyp switch
-        {
-            DruhyStromuTyp.None => "",
-            DruhyStromuTyp.Borovice => "Borovice",
-            DruhyStromuTyp.Buk => "Buk",
-            DruhyStromuTyp.Dub => "Dub",
-            DruhyStromuTyp.Modrin => "Modřín",
-            DruhyStromuTyp.Smrk => "Smrk",
-            DruhyStromuTyp.Jedle => "Jedle",
-            DruhyStromuTyp.Jasan => "Jasan",
-            DruhyStromuTyp.Topol => "Topol",
-            DruhyStromuTyp.Briza => "Bříza",
-            DruhyStromuTyp.Javor => "Javor",
-            _ => "" // Pokud nic neodpovídá, vrátí prázdný řetězec
-        };
+        None = 0,
+        Borovice = 1,
+        Buk = 2,
+        Dub = 3,
+        Modrin = 4,
+        Smrk = 5,
+        Jedle = 6,
+        Jasan = 7,
+        Topol = 8,
+        Briza = 9,
+        Javor = 10
     }
 }

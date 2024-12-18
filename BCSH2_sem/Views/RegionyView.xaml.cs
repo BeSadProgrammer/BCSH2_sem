@@ -1,4 +1,5 @@
-﻿using System;
+﻿using StromApp.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,14 +16,14 @@ using System.Windows.Shapes;
 namespace StromApp.Views
 {
     /// <summary>
-    /// Interaction logic for RegionView.xaml
+    /// Interaction logic for RegionyView.xaml
     /// </summary>
-    public partial class RegionView : Window
+    public partial class RegionyView : Window
     {
-        public RegionView()
+        public RegionyView()
         {
             InitializeComponent();
-            this.DataContext = new RegionViewModel(); // Set the DataContext to the RegionViewModel
+            DataContext = new RegionyViewModel();
         }
     }
 }

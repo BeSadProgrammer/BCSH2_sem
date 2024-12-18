@@ -1,50 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System.ComponentModel;
-
-namespace StromApp.Models;
-
-[Serializable]
-public class Region : INotifyPropertyChanged
+﻿namespace StromApp.Models
 {
-    private static int _nextID = 1;
-
-    private int _regionID;
-    private string _nazevRegionu;
-
-    public int RegionID
+    public class Region
     {
-        get => _regionID;
-        set
-        {
-            if (_regionID != value)
-            {
-                _regionID = value;
-                OnPropertyChanged(nameof(RegionID));
-            }
-        }
+        public int ID { get; set; }
+        public string NazevRegionu { get; set; }
     }
-
-    public string NazevRegionu
-    {
-        get => _nazevRegionu;
-        set
-        {
-            if (_nazevRegionu != value)
-            {
-                _nazevRegionu = value;
-                OnPropertyChanged(nameof(NazevRegionu));
-            }
-        }
-    }
-
-    public Region(string nazevRegionu)
-    {
-        RegionID = _nextID++;
-        NazevRegionu = nazevRegionu;
-    }
-
-    public static void SetNextID(int nextID) => _nextID = nextID;
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-    protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }

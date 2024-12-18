@@ -1,0 +1,34 @@
+﻿<Window x:Class="StromApp.Views.SpravciView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Seznam správců" Height="500" Width="700">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- ListView for Spravci -->
+        <ListView Grid.Column="0" ItemsSource="{Binding Spravci}" SelectedItem="{Binding SelectedSpravce}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="ID" DisplayMemberBinding="{Binding ID}" />
+                    <GridViewColumn Header="Jméno" DisplayMemberBinding="{Binding Jmeno}" />
+                    <GridViewColumn Header="Příjmení" DisplayMemberBinding="{Binding Prijmeni}" />
+                    <GridViewColumn Header="Email" DisplayMemberBinding="{Binding Email}" />
+                    <GridViewColumn Header="Telefon" DisplayMemberBinding="{Binding Telefon}" />
+                    <GridViewColumn Header="Region" DisplayMemberBinding="{Binding NazevRegionu}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <!-- Actions StackPanel -->
+        <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Top">
+            <Button Content="Přidat správce" Command="{Binding AddSpravceCommand}" Margin="5" />
+            <Button Content="Odebrat správce" Command="{Binding DeleteSpravceCommand}" Margin="5" />
+        </StackPanel>
+
+        <!-- Close Button -->
+        <Button Content="Zavřít" Command="{Binding CloseWindowCommand}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,5,5" Grid.Column="1" Width="160" />
+    </Grid>
+</Window>

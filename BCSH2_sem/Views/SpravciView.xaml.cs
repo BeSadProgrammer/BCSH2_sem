@@ -16,14 +16,14 @@ using System.Windows.Shapes;
 namespace StromApp.Views
 {
     /// <summary>
-    /// Interaction logic for StromView.xaml
+    /// Interaction logic for SpravciView.xaml
     /// </summary>
-    public partial class StromView : Window
+    public partial class SpravciView : Window
     {
-        public StromView()
+        public SpravciView()
         {
             InitializeComponent();
-            DataContext = new StromViewModel();
+            DataContext = new SpravciViewModel();
         }
     }
 }
