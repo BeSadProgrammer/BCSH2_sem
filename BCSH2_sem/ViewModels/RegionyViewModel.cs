@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using StromApp.Handlers;
 using StromApp.Models;
+using StromApp.Views;
 using System.Collections.ObjectModel;
 
 namespace StromApp.ViewModels
@@ -55,5 +56,13 @@ namespace StromApp.ViewModels
             System.Windows.Application.Current.Windows
                 .OfType<Views.RegionyView>().FirstOrDefault()?.Close();
         }
+
+        [RelayCommand]
+        private void ShowAddRegionDialog()
+        {
+            var addRegionDialog = new AddRegionDialog();
+            addRegionDialog.ShowDialog();
+        }
+
     }
 }
