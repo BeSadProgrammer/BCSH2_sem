@@ -13,4 +13,13 @@
 		<AssemblyName>StromLib</AssemblyName>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.4.0" />
+	  <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Models\" />
+	</ItemGroup>
+
 </Project>
