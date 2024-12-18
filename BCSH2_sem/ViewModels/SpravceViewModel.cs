@@ -1,6 +1,7 @@
 ﻿using StromApp.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
+using StromApp.Handlers;
 
 namespace StromApp.ViewModels
 {
@@ -11,14 +12,8 @@ namespace StromApp.ViewModels
 
         public SpravceViewModel()
         {
-            // Assuming there is a method to get the list of Spravce objects
-            Spravci = new ObservableCollection<Spravce>(GetSpravci());
-        }
-
-        private IEnumerable<Spravce> GetSpravci()
-        {
-            // Replace this with the actual implementation to retrieve Spravce objects
-            return new List<Spravce>();
+            // Load spravci (managers) from SQLite
+            Spravci = new ObservableCollection<Spravce>(SQLiteHandler.GetSpravce());
         }
     }
 }

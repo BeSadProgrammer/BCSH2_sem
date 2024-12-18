@@ -5,98 +5,93 @@ using System.Windows.Input;
 using System.Linq;
 using CommunityToolkit.Mvvm.Input;
 using System;
+using StromApp.Handlers;
+using StromApp.Views;
 
 namespace StromApp.ViewModels
 {
     public partial class StromViewModel : ObservableObject
     {
-        // Kolekce stromů pro binding
         [ObservableProperty]
         private ObservableCollection<Strom> stromy;
 
-        // Vybraný strom pro binding
         [ObservableProperty]
         private Strom selectedStrom;
 
-        // Příkaz pro přidání nového stromu
         public ICommand NewStromCommand { get; }
-
-        // Příkaz pro úpravu stromu
         public ICommand EditStromCommand { get; }
-
-        // Příkaz pro smazání vybraného stromu
         public ICommand DeleteSelectedStromCommand { get; }
-
-        // Příkaz pro smazání všech stromů
         public ICommand DeleteAllStromyCommand { get; }
+        public ICommand RegionCommand { get; }
 
-        // Filtrace stromů
         [ObservableProperty]
         private string searchQuery;
 
-        // Konstruktor
         public StromViewModel()
         {
-            Stromy = new ObservableCollection<Strom>(LoadStromy()); // Load stromy from a method or service
+            SQLiteHandler.InitializeDatabase(); // Ensure DB is initialized
+            Stromy = new ObservableCollection<Strom>(SQLiteHandler.GetStromy()); // Load trees from SQLite
             NewStromCommand = new RelayCommand(OnNewStrom);
             EditStromCommand = new RelayCommand(OnEditStrom);
             DeleteSelectedStromCommand = new RelayCommand(OnDeleteSelectedStrom);
             DeleteAllStromyCommand = new RelayCommand(OnDeleteAllStromy);
+            RegionCommand = new RelayCommand(OpenRegionView); // Initialize the command
+
         }
 
-        // Simulating loading trees (replace with real data access logic)
-        private IEnumerable<Strom> LoadStromy()
-        {
-            // This should be replaced with actual data loading logic (e.g., database or repository)
-            return new List<Strom>(); // Empty for now, replace with actual list of trees
-        }
-
-        // Metody pro příkazy
+        // Method for adding a new tree
         private void OnNewStrom()
         {
-            // Logika pro přidání nového stromu
-            // Open a new dialog or form to add a new tree to the collection
-            var newTree = new Strom(DruhyStromuTyp.None, null, DateTime.Now, DateTime.Now, "New Location", 10, 30, "Bark Type");
-            Stromy.Add(newTree);
+            var newTree = new Strom(DruhyStromuTyp.None, new Spravce("x", "y", "z", "+4", new Region("testss")), DateTime.Now, DateTime.Now, "New Location", 10, 30, "Bark Type");
+            SQLiteHandler.InsertStrom(newTree); // Insert the new tree into SQLite
+            Stromy.Add(newTree); // Add to ObservableCollection
         }
 
         private void OnEditStrom()
         {
-            // Logika pro úpravu existujícího stromu
-            // Here, you should implement logic to edit a selected tree, likely by opening an edit form.
+            // Logic to edit an existing tree. This would typically involve opening a dialog to edit the tree details.
         }
 
         private void OnDeleteSelectedStrom()
         {
-            // Pokud je vybraný strom, odstraňte ho z kolekce
             if (SelectedStrom != null)
             {
-                Stromy.Remove(SelectedStrom);
-                SelectedStrom = null; // Volitelné: zrušení výběru stromu po smazání
+                SQLiteHandler.DeleteStrom(SelectedStrom.ID); // Delete from SQLite
+                Stromy.Remove(SelectedStrom); // Remove from collection
+                SelectedStrom = null; // Optional: clear the selected tree
             }
         }
 
         private void OnDeleteAllStromy()
         {
-            // Logika pro smazání všech stromů
-            Stromy.Clear();
+            foreach (var strom in Stromy.ToList())
+            {
+                SQLiteHandler.DeleteStrom(strom.ID); // Delete each tree from SQLite
+            }
+            Stromy.Clear(); // Clear ObservableCollection
         }
 
-        // Filtrace stromů na základě dotazu
         public void FilterStromy()
         {
             if (string.IsNullOrEmpty(SearchQuery))
             {
-                Stromy = new ObservableCollection<Strom>(LoadStromy()); // Reload all if no search query
+                Stromy = new ObservableCollection<Strom>(SQLiteHandler.GetStromy()); // Reload all trees
             }
             else
             {
-                var filtered = LoadStromy()
+                var filtered = SQLiteHandler.GetStromy()
                     .Where(strom => strom.Lokace.Contains(SearchQuery, StringComparison.OrdinalIgnoreCase) ||
                                     strom.StromTyp.ToString().Contains(SearchQuery, StringComparison.OrdinalIgnoreCase))
                     .ToList();
                 Stromy = new ObservableCollection<Strom>(filtered);
             }
+        }
+
+        private void OpenRegionView()
+        {
+            // Create and show the RegionView window
+            RegionView regionView = new RegionView();
+            regionView.ShowDialog(); // Display the RegionView window
         }
     }
 }

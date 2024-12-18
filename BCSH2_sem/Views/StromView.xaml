@@ -32,13 +32,11 @@
         </StackPanel>
 
         <!-- Search Bar -->
-        <TextBox Name="SearchTextBox" Height="25" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="272,0,0,12"
+        <TextBox Name="SearchTextBox" Height="25" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="115,0,0,12"
                  Width="200" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" />
 
         <!-- Buttons on the bottom -->
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,10" Grid.Row="2">
-            <Button Name="SaveBtn" Content="Uložit" Width="75" Height="30" Margin="0,0,10,0" Command="{Binding SaveCommand}" />
-            <Button Name="LoadBtn" Content="Načíst" Width="75" Height="30" Margin="0,0,10,0" Command="{Binding LoadCommand}" />
             <Button Name="DeleteAllBtn" Content="Zrušit" Width="75" Height="30" Command="{Binding DeleteAllStromyCommand}" />
         </StackPanel>
     </Grid>
