@@ -2,7 +2,9 @@
 using CommunityToolkit.Mvvm.Input;
 using StromApp.Handlers;
 using StromApp.Models;
+using StromApp.Views;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace StromApp.ViewModels
 {
@@ -25,23 +27,8 @@ namespace StromApp.ViewModels
         [RelayCommand]
         private void AddSpravce()
         {
-            var newSpravce = new Spravce
-            {
-                Jmeno = "Nový",
-                Prijmeni = "Správce",
-                Email = "",
-                Telefon = "",
-                RegionID = 1
-            };
-
-            // Přidání správce do databáze a získání jeho ID
-            var addedSpravce = _sqliteHandler.AddSpravce(newSpravce);
-
-            // Přiřazení správného ID z databáze
-            newSpravce.ID = addedSpravce.ID;
-
-            // Přidání správce do ObservableCollection
-            Spravci.Add(newSpravce);
+            var dialog = new AddSpravceDialog();
+            dialog.ShowDialog();
         }
 
         [RelayCommand]
