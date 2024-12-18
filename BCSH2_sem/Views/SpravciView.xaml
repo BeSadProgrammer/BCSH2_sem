@@ -25,6 +25,7 @@
         <!-- Actions StackPanel -->
         <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Top">
             <Button Content="Přidat správce" Command="{Binding AddSpravceCommand}" Margin="5" />
+            <Button Content="Upravit správce" Command="{Binding EditSpravceCommand}" Margin="5" />
             <Button Content="Odebrat správce" Command="{Binding DeleteSpravceCommand}" Margin="5" />
         </StackPanel>
 

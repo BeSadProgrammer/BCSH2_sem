@@ -29,6 +29,7 @@ namespace StromApp.ViewModels
         {
             var dialog = new AddSpravceDialog();
             dialog.ShowDialog();
+            Spravci = new ObservableCollection<Spravce>(_sqliteHandler.GetAllSpravci());
         }
 
         [RelayCommand]
@@ -39,6 +40,28 @@ namespace StromApp.ViewModels
             Spravci.Remove(SelectedSpravce);
             SelectedSpravce = Spravci.FirstOrDefault();
         }
+
+        [RelayCommand]
+        private void EditSpravce()
+        {
+            if (SelectedSpravce == null) return;
+
+            var dialog = new EditSpravceDialog
+            {
+                DataContext = new EditSpravceViewModel(
+                    SelectedSpravce,
+                    new ObservableCollection<Region>(_sqliteHandler.GetAllRegiony()),
+                    updatedSpravce =>
+                    {
+                        _sqliteHandler.UpdateSpravce(updatedSpravce);
+                        var index = Spravci.IndexOf(SelectedSpravce);
+                        Spravci[index] = updatedSpravce; // Aktualizace v ObservableCollection
+                    })
+            };
+            dialog.ShowDialog();
+            Spravci = new ObservableCollection<Spravce>(_sqliteHandler.GetAllSpravci());
+        }
+
 
         [RelayCommand]
         private void CloseWindow()

@@ -1,0 +1,46 @@
+﻿<Window x:Class="StromApp.Views.EditSpravceDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Editovat správce" Height="400" Width="400" ResizeMode="NoResize">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Jméno -->
+        <TextBlock Text="Zadejte jméno:" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,5"/>
+        <TextBox Width="300" Margin="0,5" Grid.Row="1" Text="{Binding SelectedSpravce.Jmeno}" />
+
+        <!-- Příjmení -->
+        <TextBlock Text="Zadejte příjmení:" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,5" Grid.Row="2"/>
+        <TextBox Width="300" Margin="0,5" Grid.Row="3" Text="{Binding SelectedSpravce.Prijmeni}" />
+
+        <!-- E-mail -->
+        <TextBlock Text="Zadejte e-mail:" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,5" Grid.Row="4"/>
+        <TextBox Width="300" Margin="0,5" Grid.Row="5" Text="{Binding SelectedSpravce.Email}" />
+
+        <!-- Telefon -->
+        <TextBlock Text="Zadejte telefon:" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,5" Grid.Row="6"/>
+        <TextBox Width="300" Margin="0,5" Grid.Row="7" Text="{Binding SelectedSpravce.Telefon}" />
+
+        <!-- Region -->
+        <TextBlock Text="Vyberte region:" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,5" Grid.Row="8"/>
+        <ComboBox Width="300" Margin="0,5" Grid.Row="9" ItemsSource="{Binding Regiony}" DisplayMemberPath="NazevRegionu" SelectedItem="{Binding SelectedRegion}" />
+
+        <!-- Tlačítka pro Uložit a Zrušit -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="10" Margin="0,10">
+            <Button Content="Uložit" Width="100" Command="{Binding SaveCommand}" Margin="5"/>
+            <Button Content="Zrušit" Width="100" Command="{Binding CancelCommand}" Margin="5"/>
+        </StackPanel>
+    </Grid>
+</Window>

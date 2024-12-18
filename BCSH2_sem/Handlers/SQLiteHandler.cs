@@ -304,6 +304,36 @@ namespace StromApp.Handlers
             }
         }
 
+        public void UpdateSpravce(Spravce updatedSpravce)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+
+                var updateSpravceQuery = @"
+                    UPDATE Spravce
+                    SET Jmeno = @Jmeno,
+                        Prijmeni = @Prijmeni,
+                        Email = @Email,
+                        Telefon = @Telefon,
+                        RegionID = @RegionID
+                    WHERE ID = @ID;";
+
+                using (var command = new SqliteCommand(updateSpravceQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@Jmeno", updatedSpravce.Jmeno);
+                    command.Parameters.AddWithValue("@Prijmeni", updatedSpravce.Prijmeni);
+                    command.Parameters.AddWithValue("@Email", updatedSpravce.Email);
+                    command.Parameters.AddWithValue("@Telefon", updatedSpravce.Telefon);
+                    command.Parameters.AddWithValue("@RegionID", updatedSpravce.RegionID);
+                    command.Parameters.AddWithValue("@ID", updatedSpravce.ID);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+
         // ------------------------------------
         // Stromy
         // ------------------------------------
