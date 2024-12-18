@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace StromLibrary;
+namespace StromApp.Models;
 
 [Serializable]
 public class Region : INotifyPropertyChanged

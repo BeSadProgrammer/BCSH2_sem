@@ -1,0 +1,45 @@
+﻿<Window x:Class="StromApp.Views.StromView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Stromy" Height="450" Width="800">
+    <Grid Margin="10">
+        <!-- ListView for displaying tree data -->
+        <ListView Name="ListViewStromy" Margin="0,0,100,50" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+          ItemsSource="{Binding Stromy}" SelectedItem="{Binding SelectedStrom}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="ID" DisplayMemberBinding="{Binding ID}" />
+                    <GridViewColumn Header="Typ stromu" DisplayMemberBinding="{Binding StromTyp}" />
+                    <GridViewColumn Header="Správce" DisplayMemberBinding="{Binding Spravce}" />
+                    <GridViewColumn Header="Datum zasazení" DisplayMemberBinding="{Binding DatumZasazeni}" />
+                    <GridViewColumn Header="Datum poslední aktualizace" DisplayMemberBinding="{Binding DatumPridaniZaznamu}" />
+                    <GridViewColumn Header="Lokace" DisplayMemberBinding="{Binding Lokace}" />
+                    <GridViewColumn Header="Výška (m)" DisplayMemberBinding="{Binding Vyska}" />
+                    <GridViewColumn Header="Průměr kmene (m)" DisplayMemberBinding="{Binding PrumerKmene}" />
+                    <GridViewColumn Header="Typ kůry" DisplayMemberBinding="{Binding TypKury}" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+        <!-- Buttons on the right side -->
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Top" Width="80" Margin="0,0,10,0">
+            <Button Name="NewBtn" Content="Nový" Height="30" Margin="0,0,0,5" Command="{Binding NewStromCommand}" />
+            <Button Name="EditBtn" Content="Úprava" Height="30" Margin="0,0,0,5" Command="{Binding EditStromCommand}" />
+            <Button Name="DeleteSelectedBtn" Content="Smazat" Height="30" Margin="0,0,0,5" Command="{Binding DeleteSelectedStromCommand}" />
+            <Button Name="SearchBtn" Content="Hledat" Height="30" Margin="0,0,0,5" Command="{Binding FilterStromyCommand}" />
+            <Button Name="SpravceBtn" Content="Správce" Height="30" Margin="0,0,0,5" Command="{Binding SpravceCommand}" />
+            <Button Name="RegionBtn" Content="Regiony" Height="30" Margin="0,0,0,5" Command="{Binding RegionCommand}" />
+        </StackPanel>
+
+        <!-- Search Bar -->
+        <TextBox Name="SearchTextBox" Height="25" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="272,0,0,12"
+                 Width="200" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" />
+
+        <!-- Buttons on the bottom -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="0,0,0,10" Grid.Row="2">
+            <Button Name="SaveBtn" Content="Uložit" Width="75" Height="30" Margin="0,0,10,0" Command="{Binding SaveCommand}" />
+            <Button Name="LoadBtn" Content="Načíst" Width="75" Height="30" Margin="0,0,10,0" Command="{Binding LoadCommand}" />
+            <Button Name="DeleteAllBtn" Content="Zrušit" Width="75" Height="30" Command="{Binding DeleteAllStromyCommand}" />
+        </StackPanel>
+    </Grid>
+</Window>

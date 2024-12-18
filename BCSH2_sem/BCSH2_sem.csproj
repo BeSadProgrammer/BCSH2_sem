@@ -16,10 +16,7 @@
 	<ItemGroup>
 	  <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.4.0" />
 	  <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Models\" />
+	  <PackageReference Include="SQLitePCLRaw.core" Version="2.1.10" />
 	</ItemGroup>
 
 </Project>
