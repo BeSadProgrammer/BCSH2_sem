@@ -201,6 +201,21 @@ namespace StromApp.Handlers
                 }
             }
         }
+        public void UpdateRegion(Region region)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+
+                var updateRegionQuery = "UPDATE Region SET NazevRegionu = @NazevRegionu WHERE ID = @ID;";
+                using (var command = new SqliteCommand(updateRegionQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@NazevRegionu", region.NazevRegionu);
+                    command.Parameters.AddWithValue("@ID", region.ID);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
 
         // ------------------------------------
         // Správci

@@ -24,21 +24,21 @@ namespace StromApp.ViewModels
         }
 
         [RelayCommand]
-        private void AddRegion()
+        private void ShowAddRegionDialog()
         {
-            var newRegion = new Region
-            {
-                NazevRegionu = "Nový region"
-            };
+            var dialog = new AddRegionDialog();
+            dialog.ShowDialog();
+        }
 
-            // Přidání regionu do databáze a získání jeho ID
-            var addedRegion = _sqliteHandler.AddRegion(newRegion);
+        [RelayCommand]
+        private void ShowEditRegionDialog()
+        {
+            if (SelectedRegion == null) return;
 
-            // Přiřazení správného ID z databáze
-            newRegion.ID = addedRegion.ID;
-
-            // Přidání regionu do ObservableCollection
-            Regiony.Add(newRegion);
+            var dialog = new EditRegionDialog();
+            var editRegionViewModel = new EditRegionViewModel(SelectedRegion);
+            dialog.DataContext = editRegionViewModel;
+            dialog.ShowDialog();
         }
 
         [RelayCommand]
@@ -56,13 +56,5 @@ namespace StromApp.ViewModels
             System.Windows.Application.Current.Windows
                 .OfType<Views.RegionyView>().FirstOrDefault()?.Close();
         }
-
-        [RelayCommand]
-        private void ShowAddRegionDialog()
-        {
-            var addRegionDialog = new AddRegionDialog();
-            addRegionDialog.ShowDialog();
-        }
-
     }
 }

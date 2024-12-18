@@ -3,6 +3,9 @@ using System.Windows;
 
 namespace StromApp.Views
 {
+    /// <summary>
+    /// Interaction logic for AddRegionDialog.xaml
+    /// </summary>
     public partial class AddRegionDialog : Window
     {
         public AddRegionDialog()
