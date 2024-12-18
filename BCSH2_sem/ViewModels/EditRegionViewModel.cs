@@ -3,48 +3,57 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using StromApp.Handlers;
 using StromApp.Models;
+using StromApp.ViewModels;
 using StromApp.Views;
 
-namespace StromApp.ViewModels
+public partial class EditRegionViewModel : ObservableObject
 {
-    public partial class EditRegionViewModel : ObservableObject
+    private Region _region;
+    private SQLiteHandler _sqliteHandler;
+    private RegionyViewModel _regionyViewModel;
+
+    [ObservableProperty]
+    private string regionName;
+
+    public EditRegionViewModel(Region selectedRegion, RegionyViewModel regionyViewModel)
     {
-        private Region _region;
+        _sqliteHandler = new SQLiteHandler();
+        _regionyViewModel = regionyViewModel;
+        _region = selectedRegion;
+        RegionName = selectedRegion.NazevRegionu;
+    }
 
-        [ObservableProperty]
-        private string regionName;
-
-        public EditRegionViewModel(Region selectedRegion)
+    [RelayCommand]
+    private void EditRegion()
+    {
+        if (string.IsNullOrWhiteSpace(RegionName))
         {
-            _region = selectedRegion;
-            RegionName = selectedRegion.NazevRegionu;
+            // Handle error: region name is required
+            return;
         }
 
-        [RelayCommand]
-        private void EditRegion()
+        _region.NazevRegionu = RegionName;
+
+        // Update the region in the database
+        _sqliteHandler.UpdateRegion(_region);
+
+        // Reload all regions to ensure data is updated
+        _regionyViewModel.Regiony.Clear();
+        var updatedRegiony = _sqliteHandler.GetAllRegiony();
+        foreach (var region in updatedRegiony)
         {
-            if (string.IsNullOrWhiteSpace(RegionName))
-            {
-                // Handle error: region name is required
-                return;
-            }
-
-            _region.NazevRegionu = RegionName;
-
-            // Update the region in the database
-            var handler = new SQLiteHandler();
-            handler.UpdateRegion(_region);
-
-            // Close the dialog
-            var dialog = (EditRegionDialog)App.Current.Windows.OfType<EditRegionDialog>().FirstOrDefault();
-            dialog?.Close();
+            _regionyViewModel.Regiony.Add(region);
         }
 
-        [RelayCommand]
-        private void Cancel()
-        {
-            var dialog = (EditRegionDialog)App.Current.Windows.OfType<EditRegionDialog>().FirstOrDefault();
-            dialog?.Close();
-        }
+        // Close the dialog
+        var dialog = (EditRegionDialog)App.Current.Windows.OfType<EditRegionDialog>().FirstOrDefault();
+        dialog?.Close();
+    }
+
+    [RelayCommand]
+    private void Cancel()
+    {
+        var dialog = (EditRegionDialog)App.Current.Windows.OfType<EditRegionDialog>().FirstOrDefault();
+        dialog?.Close();
     }
 }

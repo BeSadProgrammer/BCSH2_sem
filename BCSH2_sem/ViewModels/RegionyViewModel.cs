@@ -36,7 +36,7 @@ namespace StromApp.ViewModels
             if (SelectedRegion == null) return;
 
             var dialog = new EditRegionDialog();
-            var editRegionViewModel = new EditRegionViewModel(SelectedRegion);
+            var editRegionViewModel = new EditRegionViewModel(SelectedRegion, this);
             dialog.DataContext = editRegionViewModel;
             dialog.ShowDialog();
         }
