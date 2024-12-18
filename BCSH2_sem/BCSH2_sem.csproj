@@ -8,17 +8,9 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Views\icon.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
-    <PackageReference Include="SQLitePCLRaw.core" Version="2.1.10" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Views\icon.png" />
-  </ItemGroup>
+	<PropertyGroup>
+		<RootNamespace>StromApp</RootNamespace>
+		<AssemblyName>StromLib</AssemblyName>
+	</PropertyGroup>
 
 </Project>
