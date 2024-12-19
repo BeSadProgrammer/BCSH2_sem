@@ -44,7 +44,7 @@
         <!-- Bottom StackPanel -->
         <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5" Grid.Row="1">
             <Button Content="Zrušit vše" Command="{Binding ClearStromyCommand}" Margin="5" />
-            <TextBox Width="200" Text="{Binding SearchText}" Margin="5" />
+            <TextBox Width="200" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Margin="5" />
             <Button Content="Hledat" Command="{Binding SearchCommand}" Margin="5" />
         </StackPanel>
     </Grid>
