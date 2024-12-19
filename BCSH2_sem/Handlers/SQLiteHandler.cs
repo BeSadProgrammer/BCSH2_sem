@@ -185,16 +185,31 @@ namespace StromApp.Handlers
             }
         }
 
-        // Metoda pro odstranění regionu podle ID
         public void DeleteRegion(int id)
         {
             using (var connection = new SqliteConnection(_connectionString))
             {
                 connection.Open();
 
-                var query = "DELETE FROM Region WHERE ID = @ID";
+                // Nejprve odstraníme všechny stromy, které mají tento region
+                var deleteStromyQuery = "DELETE FROM Strom WHERE SpravceID IN (SELECT ID FROM Spravce WHERE RegionID = @ID)";
+                using (var command = new SqliteCommand(deleteStromyQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@ID", id);
+                    command.ExecuteNonQuery();
+                }
 
-                using (var command = new SqliteCommand(query, connection))
+                // Poté odstraníme všechny správce tohoto regionu
+                var deleteSpravceQuery = "DELETE FROM Spravce WHERE RegionID = @ID";
+                using (var command = new SqliteCommand(deleteSpravceQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@ID", id);
+                    command.ExecuteNonQuery();
+                }
+
+                // Nakonec odstraníme samotný region
+                var deleteRegionQuery = "DELETE FROM Region WHERE ID = @ID";
+                using (var command = new SqliteCommand(deleteRegionQuery, connection))
                 {
                     command.Parameters.AddWithValue("@ID", id);
                     command.ExecuteNonQuery();
@@ -294,9 +309,17 @@ namespace StromApp.Handlers
             {
                 connection.Open();
 
-                var query = "DELETE FROM Spravce WHERE ID = @ID";
+                // Nejprve odstraníme všechny stromy, které mají tohoto správce
+                var deleteStromyQuery = "DELETE FROM Strom WHERE SpravceID = @ID";
+                using (var command = new SqliteCommand(deleteStromyQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@ID", id);
+                    command.ExecuteNonQuery();
+                }
 
-                using (var command = new SqliteCommand(query, connection))
+                // Poté odstraníme samotného správce
+                var deleteSpravceQuery = "DELETE FROM Spravce WHERE ID = @ID";
+                using (var command = new SqliteCommand(deleteSpravceQuery, connection))
                 {
                     command.Parameters.AddWithValue("@ID", id);
                     command.ExecuteNonQuery();
