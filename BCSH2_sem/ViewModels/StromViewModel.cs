@@ -2,8 +2,10 @@
 using CommunityToolkit.Mvvm.Input;
 using StromApp.Handlers;
 using StromApp.Models;
+using StromApp.Views;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System;
 
 namespace StromApp.ViewModels
 {
@@ -33,29 +35,48 @@ namespace StromApp.ViewModels
             Stromy = new ObservableCollection<Strom>(_sqliteHandler.GetAllStromy());
         }
 
+        // Command to show AddStromDialog
         [RelayCommand]
-        private void AddStrom()
+        private void ShowAddStromDialog()
         {
-            var newStrom = new Strom
+            var addStromDialog = new AddStromDialog
             {
-                // Nastavte výchozí hodnoty
-                SpravceID = 1,
-                DruhStromu = DruhyStromuTyp.None,
-                DatumZasazeni = DateTime.Now,
-                DatumPridaniZaznamu = DateTime.Now,
-                Lokace = "Nová lokalita", // Příklad
-                Vyska = 0.0,              // Příklad
-                PrumerKmeni = 0.0,        // Příklad
-                TypKury = "Neurčeno"      // Příklad
+                DataContext = new AddStromViewModel() // Assign the ViewModel for the AddStromDialog
             };
 
-            // Přidání stromu do databáze a získání jeho ID
+            addStromDialog.ShowDialog();
+        }
+
+        [RelayCommand]
+        private void AddStrom(AddStromViewModel addStromViewModel)
+        {
+            // Retrieve the values from AddStromViewModel
+            var newStrom = new Strom
+            {
+                SpravceID = addStromViewModel.SelectedSpravce.ID,
+                DruhStromu = addStromViewModel.SelectedDruhStromu,
+                DatumZasazeni = addStromViewModel.DatumZasazeni ?? DateTime.Now,
+                DatumPridaniZaznamu = DateTime.Now,
+                Lokace = addStromViewModel.Lokace.Trim(),
+                Vyska = addStromViewModel.Vyska,
+                PrumerKmeni = addStromViewModel.PrumerKmeni,
+                TypKury = addStromViewModel.TypKury.Trim()
+            };
+
+            // Validate the input data (optional)
+            if (string.IsNullOrEmpty(newStrom.Lokace) || newStrom.Vyska <= 0 || newStrom.PrumerKmeni <= 0)
+            {
+                // Show error or validation message
+                return;
+            }
+
+            // Add the tree to the database
             var addedStrom = _sqliteHandler.AddStrom(newStrom);
 
-            // Přiřazení správného ID z databáze
+            // Update the ID of the new tree
             newStrom.ID = addedStrom.ID;
 
-            // Přidání stromu do ObservableCollection
+            // Add the new tree to the ObservableCollection
             Stromy.Add(newStrom);
         }
 
@@ -71,14 +92,14 @@ namespace StromApp.ViewModels
         [RelayCommand]
         private void ShowSpravci()
         {
-            // Otevřít okno Správci
+            // Open Správci view
             new Views.SpravciView().Show();
         }
 
         [RelayCommand]
         private void ShowRegiony()
         {
-            // Otevřít okno Regiony
+            // Open Regiony view
             new Views.RegionyView().Show();
         }
 

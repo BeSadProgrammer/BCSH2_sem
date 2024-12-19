@@ -11,5 +11,6 @@
 
         // Tato vlastnost vrátí název regionuSpravce
         public string NazevRegionu { get; set; }
+        public string FullName { get { return Jmeno + " " + Prijmeni; } }
     }
 }

@@ -1,0 +1,62 @@
+﻿<Window x:Class="StromApp.Views.AddStromDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Přidat Strom" Height="350" Width="400">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Typ Stromu -->
+        <TextBlock Text="Typ Stromu:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
+        <ComboBox ItemsSource="{Binding DruhyStromu}" SelectedItem="{Binding SelectedDruhStromu}" Grid.Row="0" Grid.Column="1" Margin="5"/>
+
+        <!-- Správce -->
+        <TextBlock Text="Správce:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
+        <ComboBox ItemsSource="{Binding Spravci}"
+          SelectedItem="{Binding SelectedSpravce}"
+          DisplayMemberPath="FullName" Grid.Row="1" Grid.Column="1" Margin="5"/>
+
+            <!-- Datum Zasazení -->
+        <TextBlock Text="Datum Zasazení:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
+        <DatePicker SelectedDate="{Binding DatumZasazeni}" Grid.Row="2" Grid.Column="1" Margin="5"/>
+
+        <!-- Datum Aktualizace -->
+        <TextBlock Text="Datum Aktualizace:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
+        <DatePicker SelectedDate="{Binding DatumPridaniZaznamu}" Grid.Row="3" Grid.Column="1" Margin="5"/>
+
+        <!-- Lokace -->
+        <TextBlock Text="Lokace:" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
+        <TextBox Text="{Binding Lokace}" Grid.Row="4" Grid.Column="1" Margin="5"/>
+
+        <!-- Výška -->
+        <TextBlock Text="Výška (m):" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
+        <TextBox Text="{Binding Vyska}" Grid.Row="5" Grid.Column="1" Margin="5"/>
+
+        <!-- Průměr Kmene -->
+        <TextBlock Text="Průměr Kmene (m):" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
+        <TextBox Text="{Binding PrumerKmeni}" Grid.Row="6" Grid.Column="1" Margin="5"/>
+
+        <!-- Typ Kůry -->
+        <TextBlock Text="Typ Kůry:" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
+        <TextBox Text="{Binding TypKury}" Grid.Row="7" Grid.Column="1" Margin="5"/>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="8" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
+            <Button Content="Přidat" Command="{Binding AddCommand}" Margin="5"/>
+            <Button Content="Zrušit" Command="{Binding CancelCommand}" Margin="5"/>
+        </StackPanel>
+    </Grid>
+</Window>
