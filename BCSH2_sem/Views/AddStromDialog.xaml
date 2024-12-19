@@ -55,7 +55,7 @@
 
         <!-- Buttons -->
         <StackPanel Grid.Row="8" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="5">
-            <Button Content="Přidat" Command="{Binding AddCommand}" Margin="5"/>
+            <Button Content="Přidat" Command="{Binding AddStromCommand}" Margin="5"/>
             <Button Content="Zrušit" Command="{Binding CancelCommand}" Margin="5"/>
         </StackPanel>
     </Grid>

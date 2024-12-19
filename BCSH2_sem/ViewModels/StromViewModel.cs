@@ -45,39 +45,7 @@ namespace StromApp.ViewModels
             };
 
             addStromDialog.ShowDialog();
-        }
-
-        [RelayCommand]
-        private void AddStrom(AddStromViewModel addStromViewModel)
-        {
-            // Retrieve the values from AddStromViewModel
-            var newStrom = new Strom
-            {
-                SpravceID = addStromViewModel.SelectedSpravce.ID,
-                DruhStromu = addStromViewModel.SelectedDruhStromu,
-                DatumZasazeni = addStromViewModel.DatumZasazeni ?? DateTime.Now,
-                DatumPridaniZaznamu = DateTime.Now,
-                Lokace = addStromViewModel.Lokace.Trim(),
-                Vyska = addStromViewModel.Vyska,
-                PrumerKmeni = addStromViewModel.PrumerKmeni,
-                TypKury = addStromViewModel.TypKury.Trim()
-            };
-
-            // Validate the input data (optional)
-            if (string.IsNullOrEmpty(newStrom.Lokace) || newStrom.Vyska <= 0 || newStrom.PrumerKmeni <= 0)
-            {
-                // Show error or validation message
-                return;
-            }
-
-            // Add the tree to the database
-            var addedStrom = _sqliteHandler.AddStrom(newStrom);
-
-            // Update the ID of the new tree
-            newStrom.ID = addedStrom.ID;
-
-            // Add the new tree to the ObservableCollection
-            Stromy.Add(newStrom);
+            LoadData();
         }
 
         [RelayCommand]

@@ -10,6 +10,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using StromApp.ViewModels;
 using System.Windows.Shapes;
 
 namespace StromApp.Views
@@ -22,6 +23,7 @@ namespace StromApp.Views
         public AddStromDialog()
         {
             InitializeComponent();
+            this.DataContext = new AddStromViewModel();
         }
     }
 }

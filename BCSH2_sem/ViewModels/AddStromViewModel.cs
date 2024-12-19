@@ -1,102 +1,108 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using BCSH2_sem;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using StromApp.Handlers;
 using StromApp.Models;
-using System;
+using StromApp.ViewModels;
+using StromApp.Views;
 using System.Collections.ObjectModel;
-using System.Linq;
+using System.Windows;
 
-namespace StromApp.ViewModels
+public partial class AddStromViewModel : ObservableObject
 {
-    public partial class AddStromViewModel : ObservableObject
+    private SQLiteHandler _sqliteHandler;
+
+    [ObservableProperty]
+    private DruhyStromuTyp selectedDruhStromu;
+
+    [ObservableProperty]
+    private DateTime datumZasazeni;
+
+    [ObservableProperty]
+    private DateTime datumPridaniZaznamu;
+
+    [ObservableProperty]
+    private string lokace;
+
+    [ObservableProperty]
+    private double vyska;
+
+    [ObservableProperty]
+    private double prumerKmeni;
+
+    [ObservableProperty]
+    private string typKury;
+
+    [ObservableProperty]
+    private ObservableCollection<Spravce> spravci;
+
+    [ObservableProperty]
+    private Spravce selectedSpravce;
+
+    // Přidání ObservableCollection pro enum DruhyStromuTyp
+    [ObservableProperty]
+    private ObservableCollection<DruhyStromuTyp> druhyStromu;
+
+    public AddStromViewModel()
     {
-        [ObservableProperty]
-        private ObservableCollection<Spravce> spravci;
+        _sqliteHandler = new SQLiteHandler();
+        Spravci = new ObservableCollection<Spravce>(_sqliteHandler.GetAllSpravci());
 
-        [ObservableProperty]
-        private ObservableCollection<DruhyStromuTyp> druhyStromu;
+        // Naplnění kolekce DruhyStromu
+        DruhyStromu = new ObservableCollection<DruhyStromuTyp>(Enum.GetValues(typeof(DruhyStromuTyp)).Cast<DruhyStromuTyp>());
 
-        [ObservableProperty]
-        private Spravce? selectedSpravce;
+        // Nastavení výchozích hodnot pro datum
+        DatumZasazeni = DateTime.Now;  // Nastavíme na aktuální datum
+        DatumPridaniZaznamu = DateTime.Now;  // Nastavíme na aktuální datum
+    }
 
-        [ObservableProperty]
-        private DruhyStromuTyp selectedDruhStromu;
-
-        [ObservableProperty]
-        private DateTime? datumZasazeni;
-
-        [ObservableProperty]
-        private DateTime? datumPridaniZaznamu;
-
-        [ObservableProperty]
-        private string lokace;
-
-        [ObservableProperty]
-        private double vyska;
-
-        [ObservableProperty]
-        private double prumerKmeni;
-
-        [ObservableProperty]
-        private string typKury;
-
-        private SQLiteHandler _sqliteHandler;
-
-        public AddStromViewModel()
+    [RelayCommand]
+    private void AddStrom()
+    {
+        if (string.IsNullOrWhiteSpace(Lokace))
         {
-            _sqliteHandler = new SQLiteHandler();
-            LoadData();
+            MessageBox.Show("Lokace je povinná.", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
         }
 
-        private void LoadData()
+        if (SelectedSpravce == null)
         {
-            Spravci = new ObservableCollection<Spravce>(_sqliteHandler.GetAllSpravci());
-            DruhyStromu = new ObservableCollection<DruhyStromuTyp>(Enum.GetValues(typeof(DruhyStromuTyp))
-                .Cast<DruhyStromuTyp>()
-                .ToList());
+            MessageBox.Show("Správce je povinný.", "Chyba", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
         }
 
-        [RelayCommand]
-        private void AddStrom()
+        var newStrom = new Strom
         {
-            if (string.IsNullOrWhiteSpace(Lokace) || Vyska <= 0 || PrumerKmeni <= 0 || TypKury == null)
-            {
-                // Add validation or message here
-                return;
-            }
+            DruhStromu = SelectedDruhStromu,
+            SpravceID = SelectedSpravce.ID,  // Použití vybraného správce
+            DatumZasazeni = DatumZasazeni,
+            DatumPridaniZaznamu = DatumPridaniZaznamu,
+            Lokace = Lokace.Trim(),
+            Vyska = Vyska,
+            PrumerKmeni = PrumerKmeni,
+            TypKury = TypKury?.Trim()
+        };
 
-            var newStrom = new Strom
-            {
-                DruhStromu = SelectedDruhStromu,
-                SpravceID = SelectedSpravce?.ID ?? 1,  // Default to 1 if no manager is selected
-                DatumZasazeni = DatumZasazeni ?? DateTime.Now,
-                DatumPridaniZaznamu = DatumPridaniZaznamu ?? DateTime.Now,
-                Lokace = Lokace.Trim(),
-                Vyska = Vyska,
-                PrumerKmeni = PrumerKmeni,
-                TypKury = TypKury.Trim()
-            };
+        var addedStrom = _sqliteHandler.AddStrom(newStrom);
 
-            // Přidání stromu do databáze a získání jeho ID
-            var addedStrom = _sqliteHandler.AddStrom(newStrom);
+        // Přidání stromu do ObservableCollection
+        var stromyViewModel = (StromViewModel)App.Current.Windows.OfType<StromView>().FirstOrDefault()?.DataContext;
+        stromyViewModel?.Stromy.Add(addedStrom);
 
-            // Přiřazení správného ID z databáze
-            newStrom.ID = addedStrom.ID;
+        // Zavření dialogu
+        CloseDialog();
+    }
 
-            // Zavření okna dialogu
-            CloseWindow();
-        }
 
-        [RelayCommand]
-        private void Cancel()
-        {
-            CloseWindow();
-        }
+    [RelayCommand]
+    private void Cancel()
+    {
+        CloseDialog();
+    }
 
-        private void CloseWindow()
-        {
-            var window = System.Windows.Application.Current.Windows.OfType<Views.AddStromDialog>().FirstOrDefault();
-            window?.Close();
-        }
+    private void CloseDialog()
+    {
+        var dialog = (AddStromDialog)App.Current.Windows.OfType<AddStromDialog>().FirstOrDefault();
+        dialog?.Close();
     }
 }
