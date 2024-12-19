@@ -35,6 +35,7 @@
         <!-- Actions StackPanel -->
         <StackPanel Grid.Column="1" Orientation="Vertical" VerticalAlignment="Top">
             <Button Content="Přidat strom" Command="{Binding ShowAddStromDialogCommand}" Margin="5" />
+            <Button Content="Upravit strom" Command="{Binding ShowEditStromDialogCommand}" Margin="5" />
             <Button Content="Smazat strom" Command="{Binding DeleteStromCommand}" Margin="5" />
             <Button Content="Zobrazit správce" Command="{Binding ShowSpravciCommand}" Margin="5" />
             <Button Content="Zobrazit regiony" Command="{Binding ShowRegionyCommand}" Margin="5" />

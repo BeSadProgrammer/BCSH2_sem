@@ -90,5 +90,20 @@ namespace StromApp.ViewModels
             var filtered = _sqliteHandler.SearchStromy(SearchText);
             Stromy = new ObservableCollection<Strom>(filtered);
         }
+
+        [RelayCommand]
+        private void ShowEditStromDialog()
+        {
+            if (SelectedStrom != null)
+            {
+                var editViewModel = new EditStromViewModel(SelectedStrom);
+                var editDialog = new EditStromDialog
+                {
+                    DataContext = editViewModel
+                };
+                editDialog.ShowDialog();
+            }
+            LoadData();
+        }
     }
 }

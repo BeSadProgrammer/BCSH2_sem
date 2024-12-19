@@ -510,5 +510,39 @@ namespace StromApp.Handlers
 
             return stromy;
         }
+        public void UpdateStrom(Strom updatedStrom)
+        {
+            using (var connection = new SqliteConnection(_connectionString))
+            {
+                connection.Open();
+
+                var updateStromQuery = @"
+            UPDATE Strom
+            SET DruhStromu = @DruhStromu,
+                SpravceID = @SpravceID,
+                DatumZasazeni = @DatumZasazeni,
+                DatumPridaniZaznamu = @DatumPridaniZaznamu,
+                Lokace = @Lokace,
+                Vyska = @Vyska,
+                PrumerKmeni = @PrumerKmeni,
+                TypKury = @TypKury
+            WHERE ID = @ID;";
+
+                using (var command = new SqliteCommand(updateStromQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@DruhStromu", (int)updatedStrom.DruhStromu);
+                    command.Parameters.AddWithValue("@SpravceID", updatedStrom.SpravceID);
+                    command.Parameters.AddWithValue("@DatumZasazeni", updatedStrom.DatumZasazeni.ToString("yyyy-MM-dd"));
+                    command.Parameters.AddWithValue("@DatumPridaniZaznamu", updatedStrom.DatumPridaniZaznamu.ToString("yyyy-MM-dd"));
+                    command.Parameters.AddWithValue("@Lokace", updatedStrom.Lokace);
+                    command.Parameters.AddWithValue("@Vyska", updatedStrom.Vyska);
+                    command.Parameters.AddWithValue("@PrumerKmeni", updatedStrom.PrumerKmeni);
+                    command.Parameters.AddWithValue("@TypKury", (object)updatedStrom.TypKury ?? DBNull.Value); // Handling nullable value
+                    command.Parameters.AddWithValue("@ID", updatedStrom.ID);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }
